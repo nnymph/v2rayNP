@@ -279,29 +279,47 @@ download_geo_assets() {
 
   echo "[+] Download Xray Geo to ${bin_dir}"
   curl -fsSL -o "$bin_dir/geosite.dat" \
-    "https://github.com/Loyalsoldier/V2ray-rules-dat/releases/latest/download/geosite.dat"
+    "https://github.com/nnymph/v2ray-rules-dat/releases/latest/download/geosite.dat"
   curl -fsSL -o "$bin_dir/geoip.dat" \
-    "https://github.com/Loyalsoldier/V2ray-rules-dat/releases/latest/download/geoip.dat"
+    "https://github.com/nnymph/v2ray-rules-dat/releases/latest/download/geoip.dat"
+
   curl -fsSL -o "$bin_dir/geoip-only-cn-private.dat" \
     "https://raw.githubusercontent.com/Loyalsoldier/geoip/release/geoip-only-cn-private.dat"
   curl -fsSL -o "$bin_dir/Country.mmdb" \
-    "https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country.mmdb"
+    "https://raw.githubusercontent.com/nnymph/v2ray-ru-blocked-geoip/release/Country.mmdb"
 
   echo "[+] Download sing-box rule DB & rule-sets"
   curl -fsSL -o "$bin_dir/geoip.metadb" \
     "https://github.com/MetaCubeX/meta-rules-dat/releases/latest/download/geoip.metadb" || true
 
   for f in \
-    geoip-private.srs geoip-cn.srs geoip-facebook.srs geoip-fastly.srs \
-    geoip-google.srs geoip-netflix.srs geoip-telegram.srs geoip-twitter.srs; do
-    curl -fsSL -o "$srss_dir/$f" \
-      "https://raw.githubusercontent.com/2dust/sing-box-rules/rule-set-geoip/$f" || true
+  geoip-discord.srs \
+  geoip-nnymph-all-blocked.srs \
+  geoip-nnymph-block.srs \
+  geoip-nnymph-direct.srs \
+  geoip-nnymph-proxy.srs \
+  geoip-private.srs \
+  geoip-ru-blocked.srs; do
+  curl -fsSL -o "$srss_dir/$f" \
+      "https://raw.githubusercontent.com/nnymph/v2ray-rules-dat/release/sing-box/rule-set-geoip/$f" || true
   done
+
   for f in \
-    geosite-cn.srs geosite-gfw.srs geosite-google.srs geosite-greatfire.srs \
-    geosite-geolocation-cn.srs geosite-category-ads-all.srs geosite-private.srs; do
-    curl -fsSL -o "$srss_dir/$f" \
-      "https://raw.githubusercontent.com/2dust/sing-box-rules/rule-set-geosite/$f" || true
+  geosite-category-ads-all.srs \
+  geosite-discord.srs \
+  geosite-google.srs \
+  geosite-nnymph-block.srs \
+  geosite-nnymph-direct.srs \
+  geosite-nnymph-proxy.srs \
+  geosite-private.srs \
+  geosite-ru-available-only-inside.srs \
+  geosite-nnymph-ru-blocked-self.srs \
+  geosite-twitch-blocked.srs \
+  geosite-ru-blocked-self.srs \
+  geosite-ru-blocked.srs \
+  geosite-youtube.srs; do
+  curl -fsSL -o "$srss_dir/$f" \
+      "https://raw.githubusercontent.com/nnymph/v2ray-rules-dat/release/sing-box/rule-set-geosite/$f" || true
   done
 
   # Unify to bin
