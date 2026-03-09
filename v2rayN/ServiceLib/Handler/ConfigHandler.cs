@@ -104,8 +104,8 @@ public static class ConfigHandler
 
         if (config.UiItem.CurrentLanguage.IsNullOrEmpty())
         {
-            config.UiItem.CurrentLanguage = Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName.Equals("zh", StringComparison.CurrentCultureIgnoreCase)
-                ? Global.Languages.First()
+            config.UiItem.CurrentLanguage = Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName.Equals("ru", StringComparison.CurrentCultureIgnoreCase)
+                ? Global.Languages[5]
                 : Global.Languages[2];
         }
 
