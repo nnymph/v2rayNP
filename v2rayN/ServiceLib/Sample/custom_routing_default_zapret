@@ -55,6 +55,13 @@
     ]
   },
   {
+    "remarks": "Твич через прокси для 1080p",
+    "outboundTag": "proxy",
+    "domain": [
+      "geosite:twitch-blocked"
+    ]
+  },
+  {
     "remarks": "Домены через прокси",
     "outboundTag": "proxy",
     "domain": [
