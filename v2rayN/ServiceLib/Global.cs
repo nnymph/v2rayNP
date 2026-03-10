@@ -157,6 +157,7 @@ public class Global
     public static readonly List<string> GeoFilesSources =
     [
         "",
+        @"https://github.com/nnymph/v2ray-rules-dat/releases/latest/download/{0}.dat",
         @"https://github.com/runetfreedom/russia-v2ray-rules-dat/releases/latest/download/{0}.dat",
         @"https://github.com/Chocolate4U/Iran-v2ray-rules/releases/latest/download/{0}.dat"
     ];
@@ -164,6 +165,7 @@ public class Global
     public static readonly List<string> SingboxRulesetSources =
     [
         "",
+        @"https://raw.githubusercontent.com/nnymph/v2ray-rules-dat/release/sing-box/rule-set-{0}/{1}.srs",
         @"https://raw.githubusercontent.com/runetfreedom/russia-v2ray-rules-dat/release/sing-box/rule-set-{0}/{1}.srs",
         @"https://raw.githubusercontent.com/chocolate4u/Iran-sing-box-rules/rule-set/{1}.srs"
     ];
