@@ -430,8 +430,8 @@ public class Global
 
     public static readonly List<string> DomainRemoteDNSAddress =
     [
-        "https://cloudflare-dns.com/dns-query",
-            "https://dns.cloudflare.com/dns-query",
+        "https://dns.cloudflare.com/dns-query",
+            "https://cloudflare-dns.com/dns-query",
             "https://dns.google/dns-query",
             "https://doh.dns.sb/dns-query",
             "https://doh.opendns.com/dns-query",
