@@ -70,7 +70,7 @@ public class GUIItem
     public bool EnableStatistics { get; set; }
     public bool DisplayRealTimeSpeed { get; set; }
     public bool KeepOlderDedupl { get; set; }
-    public int AutoUpdateInterval { get; set; }
+    public int AutoUpdateInterval { get; set; } = 48;
     public int TrayMenuServersLimit { get; set; } = 20;
     public bool EnableHWA { get; set; } = false;
     public bool EnableLog { get; set; } = true;
@@ -97,7 +97,7 @@ public class UIItem
     public string CurrentFontFamily { get; set; }
     public int CurrentFontSize { get; set; }
     public bool EnableDragDropSort { get; set; }
-    public bool DoubleClick2Activate { get; set; }
+    public bool DoubleClick2Activate { get; set; } = true;
     public bool AutoHideStartup { get; set; }
     public bool Hide2TrayWhenClose { get; set; }
     public bool MacOSShowInDock { get; set; }
