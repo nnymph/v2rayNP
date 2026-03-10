@@ -49,7 +49,7 @@
     "ip": [
       "geoip:nnymph-proxy",
       "geoip:ru-blocked",
-      "geoip:nnnymph-all-blocked"
+      "geoip:nnymph-all-blocked"
     ]
   },
   {
