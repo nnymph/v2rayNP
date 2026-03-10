@@ -2147,36 +2147,75 @@ public static class ConfigHandler
         }
 
         var maxSort = items.Count;
-        //Bypass the mainland
+        // Безопасный режим
         var item2 = new RoutingItem()
         {
-            Remarks = $"{ver}绕过大陆(Whitelist)",
+            Remarks = $"{ver}Безопасный режим",
             Url = string.Empty,
             Sort = maxSort + 1,
         };
-        await AddBatchRoutingRules(item2, EmbedUtils.GetEmbedText(Global.CustomRoutingFileName + "white"));
+        await AddBatchRoutingRules(item2, EmbedUtils.GetEmbedText(Global.CustomRoutingFileName + "safe"));
 
-        //Blacklist
+        //Безопасный режим (zapret вкл)
         var item3 = new RoutingItem()
         {
-            Remarks = $"{ver}黑名单(Blacklist)",
+            Remarks = $"{ver}Безопасный режим (zapret вкл)",
             Url = string.Empty,
             Sort = maxSort + 2,
         };
-        await AddBatchRoutingRules(item3, EmbedUtils.GetEmbedText(Global.CustomRoutingFileName + "black"));
+        await AddBatchRoutingRules(item3, EmbedUtils.GetEmbedText(Global.CustomRoutingFileName + "safe_zapret"));
+
+        //Стандартный режим
+        var item4 = new RoutingItem()
+        {
+            Remarks = $"{ver}Стандартный режим",
+            DomainStrategy = "IpIfNonMatch",
+            Url = string.Empty,
+            Sort = maxSort + 3,
+        };
+        await AddBatchRoutingRules(item4, EmbedUtils.GetEmbedText(Global.CustomRoutingFileName + "default"));
+
+        //Стандартный режим (zapret вкл)
+        var item5 = new RoutingItem()
+        {
+            Remarks = $"{ver}Стандартный режим (zapret вкл)",
+            DomainStrategy = "IpIfNonMatch",
+            Url = string.Empty,
+            Sort = maxSort + 4,
+        };
+        await AddBatchRoutingRules(item5, EmbedUtils.GetEmbedText(Global.CustomRoutingFileName + "default_zapret"));
+
+        //Максимальный режим
+        var item6 = new RoutingItem()
+        {
+            Remarks = $"{ver}Максимальный режим",
+            DomainStrategy = "IpOnDemand",
+            Url = string.Empty,
+            Sort = maxSort + 5,
+        };
+        await AddBatchRoutingRules(item6, EmbedUtils.GetEmbedText(Global.CustomRoutingFileName + "black"));
+
+        //Весь трафик кроме РФ
+        var item7 = new RoutingItem()
+        {
+            Remarks = $"{ver}Весь трафик кроме РФ",
+            Url = string.Empty,
+            Sort = maxSort + 6,
+        };
+        await AddBatchRoutingRules(item7, EmbedUtils.GetEmbedText(Global.CustomRoutingFileName + "white"));
 
         //Global
         var item1 = new RoutingItem()
         {
-            Remarks = $"{ver}全局(Global)",
+            Remarks = $"{ver}Весь трафик",
             Url = string.Empty,
-            Sort = maxSort + 3,
+            Sort = maxSort + 7,
         };
         await AddBatchRoutingRules(item1, EmbedUtils.GetEmbedText(Global.CustomRoutingFileName + "global"));
 
         if (!blImportAdvancedRules)
         {
-            await SetDefaultRouting(config, item2);
+            await SetDefaultRouting(config, item4);
         }
         return 0;
     }

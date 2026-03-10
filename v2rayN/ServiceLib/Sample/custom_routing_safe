@@ -47,22 +47,26 @@
     "remarks": "IP через прокси",
     "outboundTag": "proxy",
     "ip": [
-      "geoip:nnymph-proxy",
-      "geoip:ru-blocked",
-      "geoip:nnnymph-all-blocked"
+      "geoip:nnymph-proxy"
     ]
   },
   {
     "remarks": "Войс дискорда через прокси #1",
     "outboundTag": "proxy",
     "port": "19294-19344",
-    "network": "udp"
+    "network": "udp",
+    "ip": [
+      "geoip:discord"
+    ]
   },
   {
     "remarks": "Войс дискорда через прокси #2",
     "outboundTag": "proxy",
     "port": "50000-50100",
-    "network": "udp"
+    "network": "udp",
+    "ip": [
+      "geoip:discord"
+    ]
   },
   {
     "remarks": "Домены дискорда через прокси",

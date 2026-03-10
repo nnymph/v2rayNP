@@ -39,13 +39,30 @@
     "outboundTag": "direct",
     "domain": [
       "geosite:private",
+      "geosite:ru-available-only-inside",
       "geosite:nnymph-direct",
-      "geosite:ru-available-only-inside"
+      "geosite:youtube",
+      "geosite:discord"
     ]
   },
   {
-    "remarks": "Весь остальной трафик через прокси",
+    "remarks": "IP через прокси",
+    "outboundTag": "proxy",
+    "ip": [
+      "geoip:nnymph-proxy"
+    ]
+  },
+  {
+    "remarks": "Домены через прокси",
+    "outboundTag": "proxy",
+    "domain": [
+      "geosite:ru-blocked",
+      "geosite:nnymph-proxy"
+    ]
+  },
+  {
+    "remarks": "Весь остальной трафик напрямую",
     "port": "0-65535",
-    "outboundTag": "proxy"
+    "outboundTag": "direct"
   }
 ]
