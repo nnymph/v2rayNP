@@ -282,12 +282,10 @@ download_geo_assets() {
     "https://github.com/nnymph/v2ray-rules-dat/releases/latest/download/geosite.dat"
   curl -fsSL -o "$bin_dir/geoip.dat" \
     "https://github.com/nnymph/v2ray-rules-dat/releases/latest/download/geoip.dat"
-
   curl -fsSL -o "$bin_dir/geoip-only-cn-private.dat" \
     "https://raw.githubusercontent.com/Loyalsoldier/geoip/release/geoip-only-cn-private.dat"
   curl -fsSL -o "$bin_dir/Country.mmdb" \
     "https://raw.githubusercontent.com/nnymph/v2ray-ru-blocked-geoip/release/Country.mmdb"
-
   echo "[+] Download sing-box rule DB & rule-sets"
   curl -fsSL -o "$bin_dir/geoip.metadb" \
     "https://github.com/MetaCubeX/meta-rules-dat/releases/latest/download/geoip.metadb" || true
