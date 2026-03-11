@@ -8,7 +8,7 @@ on:
         type: string
   push:
     branches:
-      - master
+      - nnymph-master
     tags:
       - 'v*'
       - 'V*'
@@ -80,7 +80,7 @@ jobs:
         chmod 755 package-release-zip.sh
         ./package-release-zip.sh "$OutputArch" "$OutputPath64"
         ./package-release-zip.sh "$OutputArchArm" "$OutputPathArm64"
-    
+
     - name: Upload zip archive to release
       uses: svenstaro/upload-release-action@v2
       if: github.event.inputs.release_tag != ''

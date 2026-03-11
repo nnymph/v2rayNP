@@ -8,7 +8,7 @@ on:
         type: string
   push:
     branches:
-      - master
+      - nnymph-master
 
 env:
   OutputArch: "windows-64"
@@ -35,19 +35,19 @@ jobs:
 
     - name: Build
       run: |
-        cd v2rayN 
+        cd v2rayN
         dotnet publish ./v2rayN/v2rayN.csproj     -c Release -r win-x64   -p:SelfContained=true -p:EnableWindowsTargeting=true -o $OutputPath64
         dotnet publish ./v2rayN/v2rayN.csproj     -c Release -r win-arm64 -p:SelfContained=true -p:EnableWindowsTargeting=true -o $OutputPathArm64
         dotnet publish ./AmazTool/AmazTool.csproj -c Release -r win-x64   -p:SelfContained=true -p:EnableWindowsTargeting=true -p:PublishTrimmed=true -o $OutputPath64
         dotnet publish ./AmazTool/AmazTool.csproj -c Release -r win-arm64 -p:SelfContained=true -p:EnableWindowsTargeting=true -p:PublishTrimmed=true -o $OutputPathArm64
-  
+
     - name: Upload build artifacts
       uses: actions/upload-artifact@v7.0.0
       with:
         name: v2rayN-windows
         path: |
           ${{ github.workspace }}/v2rayN/Release/windows*
-    
+
     # release zip archive
     - name: Package release zip archive
       if: github.event.inputs.release_tag != ''
@@ -55,7 +55,7 @@ jobs:
         chmod 755 package-release-zip.sh
         ./package-release-zip.sh $OutputArch $OutputPath64
         ./package-release-zip.sh $OutputArchArm $OutputPathArm64
-    
+
     - name: Upload zip archive to release
       uses: svenstaro/upload-release-action@v2
       if: github.event.inputs.release_tag != ''

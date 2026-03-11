@@ -8,7 +8,7 @@ on:
         type: string
   push:
     branches:
-      - master
+      - nnymph-master
 
 env:
   OutputArch: "macos-64"
@@ -38,7 +38,7 @@ jobs:
 
     - name: Build
       run: |
-        cd v2rayN 
+        cd v2rayN
         dotnet publish ./v2rayN.Desktop/v2rayN.Desktop.csproj -c Release -r osx-x64   -p:SelfContained=true -o $OutputPath64
         dotnet publish ./v2rayN.Desktop/v2rayN.Desktop.csproj -c Release -r osx-arm64 -p:SelfContained=true -o $OutputPathArm64
         dotnet publish ./AmazTool/AmazTool.csproj             -c Release -r osx-x64   -p:SelfContained=true -p:PublishTrimmed=true -o $OutputPath64
@@ -50,7 +50,7 @@ jobs:
         name: v2rayN-macos
         path: |
           ${{ github.workspace }}/v2rayN/Release/macos*
-    
+
     # release osx package
     - name: Package osx
       if: github.event.inputs.release_tag != ''
@@ -59,7 +59,7 @@ jobs:
         chmod 755 package-osx.sh
         ./package-osx.sh $OutputArch $OutputPath64 ${{ github.event.inputs.release_tag }}
         ./package-osx.sh $OutputArchArm $OutputPathArm64 ${{ github.event.inputs.release_tag }}
-    
+
     - name: Upload dmg to release
       uses: svenstaro/upload-release-action@v2
       if: github.event.inputs.release_tag != ''
@@ -76,7 +76,7 @@ jobs:
         chmod 755 package-release-zip.sh
         ./package-release-zip.sh $OutputArch $OutputPath64
         ./package-release-zip.sh $OutputArchArm $OutputPathArm64
-    
+
     - name: Upload zip archive to release
       uses: svenstaro/upload-release-action@v2
       if: github.event.inputs.release_tag != ''

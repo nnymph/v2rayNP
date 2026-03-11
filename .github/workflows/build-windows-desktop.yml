@@ -8,7 +8,7 @@ on:
         type: string
   push:
     branches:
-      - master
+      - nnymph-master
 
 env:
   OutputArch: "windows-64"
@@ -38,7 +38,7 @@ jobs:
 
     - name: Build
       run: |
-        cd v2rayN 
+        cd v2rayN
         dotnet publish ./v2rayN.Desktop/v2rayN.Desktop.csproj -c Release -r win-x64   -p:SelfContained=true -p:EnableWindowsTargeting=true -o $OutputPath64
         dotnet publish ./v2rayN.Desktop/v2rayN.Desktop.csproj -c Release -r win-arm64 -p:SelfContained=true -p:EnableWindowsTargeting=true -o $OutputPathArm64
         dotnet publish ./AmazTool/AmazTool.csproj             -c Release -r win-x64   -p:SelfContained=true -p:EnableWindowsTargeting=true -p:PublishTrimmed=true -o $OutputPath64
