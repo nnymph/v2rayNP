@@ -40,6 +40,7 @@ done
 
 # Список GEOSITE SRS
 for f in geosite-category-ads-all.srs geosite-discord.srs geosite-google.srs \
+         geoip-cloudflare.srs geoip-cloudfront.srs geoip-fastly.srs \
          geosite-nnymph-block.srs geosite-nnymph-direct.srs geosite-nnymph-proxy.srs \
          geosite-private.srs geosite-ru-available-only-inside.srs geosite-nnymph-ru-blocked-self.srs \
          geosite-twitch-blocked.srs geosite-ru-blocked-self.srs geosite-ru-blocked.srs geosite-youtube.srs; do

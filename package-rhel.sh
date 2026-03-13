@@ -291,6 +291,9 @@ download_geo_assets() {
     "https://github.com/MetaCubeX/meta-rules-dat/releases/latest/download/geoip.metadb" || true
 
   for f in \
+  geoip-cloudflare.srs \
+  geoip-cloudfront.srs \
+  geoip-fastly.srs \
   geoip-discord.srs \
   geoip-nnymph-all-blocked.srs \
   geoip-nnymph-block.srs \
