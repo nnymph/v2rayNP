@@ -140,18 +140,18 @@ public class Global
 
     public static readonly List<string> SpeedTestUrls =
     [
+        @"https://speed.cloudflare.com/__down?bytes=50000000",
         @"https://cachefly.cachefly.net/50mb.test",
         @"https://speed.cloudflare.com/__down?bytes=10000000",
-        @"https://speed.cloudflare.com/__down?bytes=50000000",
         @"https://speed.cloudflare.com/__down?bytes=100000000",
     ];
 
     public static readonly List<string> SpeedPingTestUrls =
     [
+        @"http://www.msftconnecttest.com/connecttest.txt",
         @"https://www.google.com/generate_204",
         @"https://www.gstatic.com/generate_204",
-        @"https://www.apple.com/library/test/success.html",
-        @"http://www.msftconnecttest.com/connecttest.txt"
+        @"https://www.apple.com/library/test/success.html"
     ];
 
     public static readonly List<string> GeoFilesSources =
