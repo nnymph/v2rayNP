@@ -306,6 +306,7 @@ download_geo_assets() {
   done
 
   for f in \
+  geosite-nnymph-ru-blocked.srs \
   geosite-category-ads-all.srs \
   geosite-discord.srs \
   geosite-google.srs \

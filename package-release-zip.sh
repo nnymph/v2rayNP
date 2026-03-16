@@ -64,6 +64,7 @@ done
 
 # Массив GEOSITE
 GEOSITE_RULES=(
+    "geosite-nnymph-ru-blocked.srs"
     "geosite-category-ads-all.srs"
     "geosite-discord.srs"
     "geosite-google.srs"
