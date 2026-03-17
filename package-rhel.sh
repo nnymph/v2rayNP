@@ -298,6 +298,8 @@ download_geo_assets() {
   geoip-nnymph-all-blocked.srs \
   geoip-nnymph-block.srs \
   geoip-nnymph-direct.srs \
+  geoip-nnymph-block-white.srs \
+  geoip-nnymph-direct-white.srs \
   geoip-nnymph-proxy.srs \
   geoip-private.srs \
   geoip-ru-blocked.srs; do
@@ -312,6 +314,8 @@ download_geo_assets() {
   geosite-google.srs \
   geosite-nnymph-block.srs \
   geosite-nnymph-direct.srs \
+  geosite-nnymph-block-white.srs \
+  geosite-nnymph-direct-white.srs \
   geosite-nnymph-proxy.srs \
   geosite-private.srs \
   geosite-ru-available-only-inside.srs \
