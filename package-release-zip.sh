@@ -50,7 +50,7 @@ GEOIP_RULES=(
     "geoip-nnymph-all-blocked.srs"
     "geoip-nnymph-block.srs"
     "geoip-nnymph-direct.srs"
-    "geoip-nnymph-block.srs-white"
+    "geoip-nnymph-block-white.srs"
     "geoip-nnymph-direct-white.srs"
     "geoip-nnymph-proxy.srs"
     "geoip-private.srs"
