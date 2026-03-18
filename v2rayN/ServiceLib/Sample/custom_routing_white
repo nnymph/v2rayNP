@@ -16,14 +16,14 @@
     "remarks": "Блокируем IP",
     "outboundTag": "block",
     "ip": [
-      "geoip:nnymph-block"
+      "geoip:nnymph-block-white"
     ]
   },
   {
     "remarks": "Блокируем домены",
     "outboundTag": "block",
     "domain": [
-      "geosite:nnymph-block"
+      "geosite:nnymph-block-white"
     ]
   },
   {
@@ -31,7 +31,7 @@
     "outboundTag": "direct",
     "ip": [
       "geoip:private",
-      "geoip:nnymph-direct"
+      "geoip:nnymph-direct-white"
     ]
   },
   {
@@ -39,7 +39,7 @@
     "outboundTag": "direct",
     "domain": [
       "geosite:private",
-      "geosite:nnymph-direct",
+      "geosite:nnymph-direct-white",
       "geosite:ru-available-only-inside"
     ]
   },
