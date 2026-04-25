@@ -21,7 +21,7 @@ jobs:
         arch: [ x64, arm64 ]
     runs-on: ubuntu-latest
     env:
-      Target: |- 
+      Target: |-
         ${{
           case(
             inputs.target == 'windows-desktop', 'windows',
@@ -33,7 +33,7 @@ jobs:
           case(
             matrix.arch == 'x64', '64',
             matrix.arch
-          ) 
+          )
         }}
     steps:
     - name: Checkout
@@ -44,17 +44,55 @@ jobs:
       with:
         name: ${{ matrix.arch }}
         path: v2rayN-${{ env.Target }}-${{ env.Arch }}
-    
+
     - name: Get v2rayN-core-bin
       run: wget -nv -O v2rayN-$Target-$Arch.zip "https://github.com/2dust/v2rayN-core-bin/raw/refs/heads/master/v2rayN-$Target-$Arch.zip"
-    
+
+    - name: Download custom nnymph Geo assets and rules
+      run: |
+        # Используем переменные GitHub Actions для определения нужной папки
+        Folder="v2rayN-$Target-$Arch"
+        BinPath="$Folder/bin"
+
+        # Создаем структуру папок внутри артефакта
+        mkdir -p "$BinPath/srss"
+
+        echo "[+] Загружаем основные Geo-файлы..."
+        curl -fsSL -o "$BinPath/geosite.dat" "https://github.com/nnymph/v2ray-rules-dat/releases/latest/download/geosite.dat"
+        curl -fsSL -o "$BinPath/geoip.dat" "https://github.com/nnymph/v2ray-rules-dat/releases/latest/download/geoip.dat"
+        curl -fsSL -o "$BinPath/Country.mmdb" "https://raw.githubusercontent.com/nnymph/v2ray-ru-blocked-geoip/release/Country.mmdb"
+        curl -fsSL -o "$BinPath/geoip.metadb" "https://github.com/MetaCubeX/meta-rules-dat/releases/latest/download/geoip.metadb"
+
+        echo "[+] Загружаем GEOIP правила..."
+        GEOIP_RULES=(
+          "geoip-discord.srs" "geoip-nnymph-all-blocked.srs" "geoip-nnymph-block.srs"
+          "geoip-nnymph-direct.srs" "geoip-nnymph-block-white.srs" "geoip-nnymph-direct-white.srs"
+          "geoip-nnymph-proxy.srs" "geoip-private.srs" "geoip-ru-blocked.srs"
+          "geoip-cloudflare.srs" "geoip-cloudfront.srs" "geoip-fastly.srs"
+        )
+        for f in "${GEOIP_RULES[@]}"; do
+            curl -fsSL -o "$BinPath/srss/$f" "https://raw.githubusercontent.com/nnymph/v2ray-rules-dat/release/sing-box/rule-set-geoip/$f"
+        done
+
+        echo "[+] Загружаем GEOSITE правила..."
+        GEOSITE_RULES=(
+          "geosite-nnymph-ru-blocked.srs" "geosite-category-ads-all.srs" "geosite-discord.srs"
+          "geosite-google.srs" "geosite-nnymph-block.srs" "geosite-nnymph-direct.srs"
+          "geosite-nnymph-block-white.srs" "geosite-nnymph-direct-white.srs" "geosite-nnymph-proxy.srs"
+          "geosite-private.srs" "geosite-ru-available-only-inside.srs" "geosite-nnymph-ru-blocked-self.srs"
+          "geosite-twitch-blocked.srs" "geosite-ru-blocked-self.srs" "geosite-ru-blocked.srs" "geosite-youtube.srs"
+        )
+        for f in "${GEOSITE_RULES[@]}"; do
+            curl -fsSL -o "$BinPath/srss/$f" "https://raw.githubusercontent.com/nnymph/v2ray-rules-dat/release/sing-box/rule-set-geosite/$f"
+        done
+
     - name: Package zip archive
       run: 7z a -tZip v2rayN-$Target-$Arch.zip v2rayN-$Target-$Arch -mx1
 
-    - name: Rename windows-desktop 
+    - name: Rename windows-desktop
       if: inputs.target == 'windows-desktop'
       run: mv "v2rayN-$Target-$Arch.zip" "v2rayN-$Target-$Arch-desktop.zip"
-    
+
     - name: Sleep for race condition between matrix jobs
       run: sleep $(awk 'BEGIN { srand(); printf "%.3f", rand()*2 }')
 
