@@ -134,10 +134,14 @@ public class Outbound4Sbox : BaseServer4Sbox
     public int? recv_window_conn { get; set; }
     public int? recv_window { get; set; }
     public bool? disable_mtu_discovery { get; set; }
+    public int? insecure_concurrency { get; set; }
+    public bool? udp_over_tcp { get; set; }
     public string? method { get; set; }
     public string? username { get; set; }
     public string? password { get; set; }
     public string? congestion_control { get; set; }
+    public bool? quic { get; set; }
+    public string? quic_congestion_control { get; set; }
     public string? version { get; set; }
     public string? network { get; set; }
     public string? packet_encoding { get; set; }
@@ -233,6 +237,8 @@ public class Transport4Sbox
 public class Headers4Sbox
 {
     public string? Host { get; set; }
+    [JsonPropertyName("User-Agent")]
+    public string UserAgent { get; set; }
 }
 
 public class HyObfs4Sbox
@@ -255,14 +261,6 @@ public class Server4Sbox : BaseServer4Sbox
 
     // public List<string>? path { get; set; } // hosts
     public Dictionary<string, List<string>>? predefined { get; set; }
-
-    // Deprecated in sing-box 1.12.0 , kept for backward compatibility
-    public string? address { get; set; }
-
-    public string? address_resolver { get; set; }
-    public string? address_strategy { get; set; }
-    public string? strategy { get; set; }
-    // Deprecated End
 }
 
 public class Experimental4Sbox

@@ -22,7 +22,7 @@ public partial class CoreConfigSingboxService
         }
         if (withSelector)
         {
-            var proxyTags = proxyOutboundList.Where(n => n.tag.StartsWith(Global.ProxyTag)).Select(n => n.tag).ToList();
+            var proxyTags = proxyOutboundList.Where(n => n.tag.StartsWith(baseTagName)).Select(n => n.tag).ToList();
             if (proxyTags.Count > 1)
             {
                 proxyOutboundList.InsertRange(0, BuildSelectorOutbounds(proxyTags, baseTagName));
@@ -84,6 +84,8 @@ public partial class CoreConfigSingboxService
         try
         {
             var protocolExtra = _node.GetProtocolExtra();
+            var transportExtra = _node.GetTransportExtra();
+            var network = _node.GetNetwork();
             outbound.server = _node.Address;
             outbound.server_port = _node.Port;
             outbound.type = Global.ProtocolTypes[_node.ConfigType];
@@ -112,27 +114,24 @@ public partial class CoreConfigSingboxService
                         outbound.method = AppManager.Instance.GetShadowsocksSecurities(_node).Contains(protocolExtra.SsMethod)
                             ? protocolExtra.SsMethod : Global.None;
                         outbound.password = _node.Password;
+                        outbound.udp_over_tcp = protocolExtra.Uot == true ? true : null;
 
-                        if (_node.Network == nameof(ETransport.tcp) && _node.HeaderType == Global.TcpHeaderHttp)
+                        if (network == nameof(ETransport.raw) && transportExtra.RawHeaderType == Global.RawHeaderHttp)
                         {
                             outbound.plugin = "obfs-local";
-                            outbound.plugin_opts = $"obfs=http;obfs-host={_node.RequestHost};";
+                            outbound.plugin_opts = $"obfs=http;obfs-host={transportExtra.Host};";
                         }
                         else
                         {
                             var pluginArgs = string.Empty;
-                            if (_node.Network == nameof(ETransport.ws))
+                            if (network == nameof(ETransport.ws))
                             {
                                 pluginArgs += "mode=websocket;";
-                                pluginArgs += $"host={_node.RequestHost};";
+                                pluginArgs += $"host={transportExtra.Host};";
                                 // https://github.com/shadowsocks/v2ray-plugin/blob/e9af1cdd2549d528deb20a4ab8d61c5fbe51f306/args.go#L172
                                 // Equal signs and commas [and backslashes] must be escaped with a backslash.
-                                var path = _node.Path.Replace("\\", "\\\\").Replace("=", "\\=").Replace(",", "\\,");
+                                var path = (transportExtra.Path ?? string.Empty).Replace("\\", "\\\\").Replace("=", "\\=").Replace(",", "\\,");
                                 pluginArgs += $"path={path};";
-                            }
-                            else if (_node.Network == nameof(ETransport.quic))
-                            {
-                                pluginArgs += "mode=quic;";
                             }
                             if (_node.StreamSecurity == Global.StreamSecurity)
                             {
@@ -223,13 +222,14 @@ public partial class CoreConfigSingboxService
                                 password = protocolExtra.SalamanderPass.TrimEx(),
                             };
                         }
-
-                        outbound.up_mbps = protocolExtra?.UpMbps is { } su and >= 0
+                        int? upMbps = protocolExtra?.UpMbps is { } su and >= 0
                             ? su
                             : _config.HysteriaItem.UpMbps;
-                        outbound.down_mbps = protocolExtra?.DownMbps is { } sd and >= 0
+                        int? downMbps = protocolExtra?.DownMbps is { } sd and >= 0
                             ? sd
-                            : _config.HysteriaItem.DownMbps;
+                            : _config.HysteriaItem.UpMbps;
+                        outbound.up_mbps = upMbps > 0 ? upMbps : null;
+                        outbound.down_mbps = downMbps > 0 ? downMbps : null;
                         var ports = protocolExtra?.Ports?.IsNullOrEmpty() == false ? protocolExtra.Ports : null;
                         if ((!ports.IsNullOrEmpty()) && (ports.Contains(':') || ports.Contains('-') || ports.Contains(',')))
                         {
@@ -269,12 +269,28 @@ public partial class CoreConfigSingboxService
                     {
                         outbound.uuid = _node.Username;
                         outbound.password = _node.Password;
-                        outbound.congestion_control = _node.HeaderType;
+                        outbound.congestion_control = protocolExtra.CongestionControl;
                         break;
                     }
                 case EConfigType.Anytls:
                     {
                         outbound.password = _node.Password;
+                        break;
+                    }
+                case EConfigType.Naive:
+                    {
+                        outbound.username = _node.Username;
+                        outbound.password = _node.Password;
+                        if (protocolExtra.NaiveQuic == true)
+                        {
+                            outbound.quic = true;
+                            outbound.quic_congestion_control = protocolExtra.CongestionControl.NullIfEmpty();
+                        }
+                        if (protocolExtra.InsecureConcurrency > 0)
+                        {
+                            outbound.insecure_concurrency = protocolExtra.InsecureConcurrency;
+                        }
+                        outbound.udp_over_tcp = protocolExtra.Uot == true ? true : null;
                         break;
                     }
             }
@@ -363,9 +379,18 @@ public partial class CoreConfigSingboxService
             {
                 serverName = _node.Sni;
             }
-            else if (_node.RequestHost.IsNotEmpty())
+            else
             {
-                serverName = Utils.String2List(_node.RequestHost)?.First();
+                var host = _node.GetNetwork() switch
+                {
+                    nameof(ETransport.raw) => _node.GetTransportExtra().Host,
+                    nameof(ETransport.ws) => _node.GetTransportExtra().Host,
+                    nameof(ETransport.httpupgrade) => _node.GetTransportExtra().Host,
+                    nameof(ETransport.xhttp) => _node.GetTransportExtra().Host,
+                    nameof(ETransport.grpc) => _node.GetTransportExtra().GrpcAuthority,
+                    _ => null,
+                };
+                serverName = Utils.String2List(host)?.First();
             }
             var tls = new Tls4Sbox()
             {
@@ -420,27 +445,31 @@ public partial class CoreConfigSingboxService
         try
         {
             var transport = new Transport4Sbox();
+            var transportExtra = _node.GetTransportExtra();
+            var useragent = _config.CoreBasicItem.DefUserAgent ?? string.Empty;
+            var useragentValue = Global.RawHttpUserAgentTexts.GetValueOrDefault(useragent, useragent);
 
             switch (_node.GetNetwork())
             {
-                case nameof(ETransport.h2):
-                    transport.type = nameof(ETransport.http);
-                    transport.host = _node.RequestHost.IsNullOrEmpty() ? null : Utils.String2List(_node.RequestHost);
-                    transport.path = _node.Path.NullIfEmpty();
-                    break;
-
-                case nameof(ETransport.tcp):   //http
-                    if (_node.HeaderType == Global.TcpHeaderHttp)
+                case nameof(ETransport.raw):   //http
+                    if (transportExtra.RawHeaderType == Global.RawHeaderHttp)
                     {
                         transport.type = nameof(ETransport.http);
-                        transport.host = _node.RequestHost.IsNullOrEmpty() ? null : Utils.String2List(_node.RequestHost);
-                        transport.path = _node.Path.NullIfEmpty();
+                        transport.host = transportExtra.Host.IsNullOrEmpty()
+                            ? null
+                            : Utils.String2List(transportExtra.Host);
+                        transport.path = transportExtra.Path.NullIfEmpty();
+                        if (!useragentValue.IsNullOrEmpty())
+                        {
+                            transport.headers ??= new();
+                            transport.headers.UserAgent = useragentValue;
+                        }
                     }
                     break;
 
                 case nameof(ETransport.ws):
                     transport.type = nameof(ETransport.ws);
-                    var wsPath = _node.Path;
+                    var wsPath = transportExtra.Path;
 
                     // Parse eh and ed parameters from path using regex
                     if (!wsPath.IsNullOrEmpty())
@@ -469,29 +498,35 @@ public partial class CoreConfigSingboxService
                     }
 
                     transport.path = wsPath.NullIfEmpty();
-                    if (_node.RequestHost.IsNotEmpty())
+                    if (transportExtra.Host.IsNotEmpty())
                     {
                         transport.headers = new()
                         {
-                            Host = _node.RequestHost
+                            Host = transportExtra.Host
                         };
+                    }
+                    if (!useragentValue.IsNullOrEmpty())
+                    {
+                        transport.headers ??= new();
+                        transport.headers.UserAgent = useragentValue;
                     }
                     break;
 
                 case nameof(ETransport.httpupgrade):
                     transport.type = nameof(ETransport.httpupgrade);
-                    transport.path = _node.Path.NullIfEmpty();
-                    transport.host = _node.RequestHost.NullIfEmpty();
+                    transport.path = transportExtra.Path.NullIfEmpty();
+                    transport.host = transportExtra.Host.NullIfEmpty();
+                    if (!useragentValue.IsNullOrEmpty())
+                    {
+                        transport.headers ??= new();
+                        transport.headers.UserAgent = useragentValue;
+                    }
 
-                    break;
-
-                case nameof(ETransport.quic):
-                    transport.type = nameof(ETransport.quic);
                     break;
 
                 case nameof(ETransport.grpc):
                     transport.type = nameof(ETransport.grpc);
-                    transport.service_name = _node.Path;
+                    transport.service_name = transportExtra.GrpcServiceName;
                     transport.idle_timeout = _config.GrpcItem.IdleTimeout?.ToString("##s");
                     transport.ping_timeout = _config.GrpcItem.HealthCheckTimeout?.ToString("##s");
                     transport.permit_without_stream = _config.GrpcItem.PermitWithoutStream;
@@ -554,7 +589,12 @@ public partial class CoreConfigSingboxService
         for (var i = 0; i < nodes.Count; i++)
         {
             var node = nodes[i];
-            var currentTag = $"{baseTagName}-{i + 1}";
+            var currentTag = $"{baseTagName}-{i + 1}-{node.Remarks}";
+
+            if (nodes.Count == 1)
+            {
+                currentTag = baseTagName;
+            }
 
             if (node.ConfigType.IsGroupType())
             {
@@ -585,8 +625,8 @@ public partial class CoreConfigSingboxService
         for (var i = 0; i < nodesReverse.Count; i++)
         {
             var node = nodesReverse[i];
-            var currentTag = i == 0 ? baseTagName : $"chain-{baseTagName}-{i}";
-            var dialerProxyTag = i != nodesReverse.Count - 1 ? $"chain-{baseTagName}-{i + 1}" : null;
+            var currentTag = i == 0 ? baseTagName : $"chain-{baseTagName}-{i}-{node.Remarks}";
+            var dialerProxyTag = i != nodesReverse.Count - 1 ? $"chain-{baseTagName}-{i + 1}-{nodesReverse[i + 1].Remarks}" : null;
             if (node.ConfigType.IsGroupType())
             {
                 var childProfiles = new CoreConfigSingboxService(context with { Node = node, }).BuildGroupProxyOutbounds(currentTag);
@@ -727,13 +767,12 @@ public partial class CoreConfigSingboxService
             }, null);
         }
         var idx = echConfig.IndexOf('+');
-        // NOTE: query_server_name, since sing-box 1.13.0
-        //var queryServerName = idx > 0 ? echConfig[..idx] : null;
+        var queryServerName = idx > 0 ? echConfig[..idx] : null;
         var echDnsServer = idx > 0 ? echConfig[(idx + 1)..] : echConfig;
         return (new Ech4Sbox()
         {
             enabled = true,
-            query_server_name = null,
+            query_server_name = queryServerName,
         }, ParseDnsAddress(echDnsServer));
     }
 }

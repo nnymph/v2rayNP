@@ -47,9 +47,9 @@ public class Inbounds4Ray
 {
     public string tag { get; set; }
 
-    public int port { get; set; }
+    public int? port { get; set; }
 
-    public string listen { get; set; }
+    public string? listen { get; set; }
 
     public string protocol { get; set; }
 
@@ -75,6 +75,18 @@ public class Inboundsettings4Ray
     public bool? allowTransparent { get; set; }
 
     public List<AccountsItem4Ray>? accounts { get; set; }
+
+    public string? name { get; set; }
+
+    public int? MTU { get; set; }
+
+    public List<string>? gateway { get; set; }
+
+    public List<string>? autoSystemRoutingTable { get; set; }
+
+    public string? autoOutboundsInterface { get; set; }
+
+    // public List<string>? dns { get; set; }
 }
 
 public class UsersItem4Ray
@@ -105,6 +117,8 @@ public class Outbounds4Ray
 
     public string protocol { get; set; }
 
+    public string? sendThrough { get; set; }
+
     public string? targetStrategy { get; set; }
 
     public Outboundsettings4Ray settings { get; set; }
@@ -126,11 +140,10 @@ public class Outboundsettings4Ray
 
     public int? userLevel { get; set; }
 
-    public FragmentItem4Ray? fragment { get; set; }
-
     public string? secretKey { get; set; }
 
-    public Object? address { get; set; }
+    public object? address { get; set; }
+
     public int? port { get; set; }
 
     public List<WireguardPeer4Ray>? peers { get; set; }
@@ -178,6 +191,8 @@ public class ServersItem4Ray
     public int? level { get; set; }
 
     public string flow { get; set; }
+
+    public bool? uot { get; set; }
 
     public List<SocksUsersItem4Ray> users { get; set; }
 }
@@ -315,7 +330,7 @@ public class StreamSettings4Ray
 
     public TlsSettings4Ray? tlsSettings { get; set; }
 
-    public TcpSettings4Ray? tcpSettings { get; set; }
+    public RawSettings4Ray? rawSettings { get; set; }
 
     public KcpSettings4Ray? kcpSettings { get; set; }
 
@@ -335,7 +350,7 @@ public class StreamSettings4Ray
 
     public HysteriaSettings4Ray? hysteriaSettings { get; set; }
 
-    public Finalmask4Ray? finalmask { get; set; }
+    public object? finalmask { get; set; }
 
     public Sockopt4Ray? sockopt { get; set; }
 }
@@ -369,7 +384,7 @@ public class CertificateSettings4Ray
     public string? usage { get; set; }
 }
 
-public class TcpSettings4Ray
+public class RawSettings4Ray
 {
     public Header4Ray header { get; set; }
 }
@@ -393,11 +408,9 @@ public class KcpSettings4Ray
 
     public int downlinkCapacity { get; set; }
 
-    public bool congestion { get; set; }
+    public int cwndMultiplier { get; set; }
 
-    public int readBufferSize { get; set; }
-
-    public int writeBufferSize { get; set; }
+    public int maxSendingWindow { get; set; }
 }
 
 public class WsSettings4Ray
@@ -419,6 +432,8 @@ public class HttpupgradeSettings4Ray
     public string? path { get; set; }
 
     public string? host { get; set; }
+
+    public Headers4Ray headers { get; set; }
 }
 
 public class XhttpSettings4Ray
@@ -454,39 +469,58 @@ public class GrpcSettings4Ray
     public int? health_check_timeout { get; set; }
     public bool? permit_without_stream { get; set; }
     public int? initial_windows_size { get; set; }
+    public string? user_agent { get; set; }
 }
 
 public class HysteriaSettings4Ray
 {
     public int version { get; set; }
     public string? auth { get; set; }
-    public string? up { get; set; }
-    public string? down { get; set; }
-    public HysteriaUdpHop4Ray? udphop { get; set; }
 }
 
-public class HysteriaUdpHop4Ray
+public class UdpHop4Ray
 {
-    public string? port { get; set; }
+    public string? ports { get; set; }
     public string? interval { get; set; }
 }
 
 public class Finalmask4Ray
 {
-    public List<Mask4Ray>? tcp { get; set; }
     public List<Mask4Ray>? udp { get; set; }
+    public QuicParams4Ray? quicParams { get; set; }
 }
 
 public class Mask4Ray
 {
     public string type { get; set; }
-    public object? settings { get; set; }
+    public MaskSettings4Ray? settings { get; set; }
 }
 
 public class MaskSettings4Ray
 {
     public string? password { get; set; }
     public string? domain { get; set; }
+    // fragment
+    public string? packets { get; set; }
+    public string? length { get; set; }
+    public string? delay { get; set; }
+    // noise
+    public int? reset { get; set; }
+    public List<NoiseMask4Ray>? noise { get; set; }
+}
+
+public class NoiseMask4Ray
+{
+    public string? rand { get; set; }
+    public string? delay { get; set; }
+}
+
+public class QuicParams4Ray
+{
+    public string? congestion { get; set; }
+    public string? brutalUp { get; set; }
+    public string? brutalDown { get; set; }
+    public UdpHop4Ray? udpHop { get; set; }
 }
 
 public class AccountsItem4Ray
@@ -499,6 +533,8 @@ public class AccountsItem4Ray
 public class Sockopt4Ray
 {
     public string? dialerProxy { get; set; }
+    [JsonPropertyName("interface")]
+    public string? Interface { get; set; }
 }
 
 public class FragmentItem4Ray

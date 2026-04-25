@@ -11,6 +11,7 @@ public partial class AddServerWindow
         Owner = Application.Current.MainWindow;
         Loaded += Window_Loaded;
         cmbNetwork.SelectionChanged += CmbNetwork_SelectionChanged;
+        cmbHeaderTypeRaw.SelectionChanged += CmbHeaderTypeRaw_SelectionChanged;
         cmbStreamSecurity.SelectionChanged += CmbStreamSecurity_SelectionChanged;
         btnGUID.Click += btnGUID_Click;
         btnGUID5.Click += btnGUID_Click;
@@ -19,6 +20,20 @@ public partial class AddServerWindow
 
         cmbCoreType.ItemsSource = Global.CoreTypes.AppendEmpty();
         cmbNetwork.ItemsSource = Global.Networks;
+        if (ViewModel.SelectedSource.Network.IsNullOrEmpty() || !Global.Networks.Contains(ViewModel.SelectedSource.Network))
+        {
+            ViewModel.SelectedSource.Network = Global.DefaultNetwork;
+        }
+
+        cmbHeaderTypeRaw.ItemsSource = new List<string> { Global.None, Global.RawHeaderHttp };
+
+        var kcpHeaderTypes = new List<string> { Global.None };
+        kcpHeaderTypes.AddRange(Global.KcpHeaderTypes);
+        cmbHeaderTypeKcp.ItemsSource = kcpHeaderTypes;
+
+        cmbHeaderTypeXhttp.ItemsSource = Global.XhttpMode;
+        cmbHeaderTypeGrpc.ItemsSource = new List<string> { Global.GrpcGunMode, Global.GrpcMultiMode };
+
         cmbFingerprint.ItemsSource = Global.Fingerprints;
         cmbFingerprint2.ItemsSource = Global.Fingerprints;
         cmbAllowInsecure.ItemsSource = Global.AllowInsecure;
@@ -75,7 +90,7 @@ public partial class AddServerWindow
                 cmbFingerprint.Text = string.Empty;
                 gridFinalmask.Visibility = Visibility.Collapsed;
 
-                cmbHeaderType8.ItemsSource = Global.TuicCongestionControls;
+                cmbCongestionControl8.ItemsSource = Global.TuicCongestionControls;
                 break;
 
             case EConfigType.WireGuard:
@@ -89,14 +104,32 @@ public partial class AddServerWindow
 
             case EConfigType.Anytls:
                 gridAnytls.Visibility = Visibility.Visible;
+                sepa2.Visibility = Visibility.Collapsed;
+                gridTransport.Visibility = Visibility.Collapsed;
                 cmbCoreType.IsEnabled = false;
                 lstStreamSecurity.Add(Global.StreamSecurityReality);
                 gridFinalmask.Visibility = Visibility.Collapsed;
                 break;
+
+            case EConfigType.Naive:
+                gridNaive.Visibility = Visibility.Visible;
+                sepa2.Visibility = Visibility.Collapsed;
+                gridTransport.Visibility = Visibility.Collapsed;
+                cmbCoreType.IsEnabled = false;
+                gridFinalmask.Visibility = Visibility.Collapsed;
+                cmbFingerprint.IsEnabled = false;
+                cmbFingerprint.Text = string.Empty;
+                cmbAlpn.IsEnabled = false;
+                cmbAlpn.Text = string.Empty;
+                cmbAllowInsecure.IsEnabled = false;
+                cmbAllowInsecure.Text = string.Empty;
+
+                cmbCongestionControl12.ItemsSource = Global.NaiveCongestionControls;
+                break;
         }
         cmbStreamSecurity.ItemsSource = lstStreamSecurity;
 
-        gridTlsMore.Visibility = Visibility.Hidden;
+        gridTlsMore.Visibility = Visibility.Collapsed;
 
         this.WhenActivated(disposables =>
         {
@@ -117,6 +150,7 @@ public partial class AddServerWindow
                 case EConfigType.Shadowsocks:
                     this.Bind(ViewModel, vm => vm.SelectedSource.Password, v => v.txtId3.Text).DisposeWith(disposables);
                     this.Bind(ViewModel, vm => vm.SsMethod, v => v.cmbSecurity3.Text).DisposeWith(disposables);
+                    this.Bind(ViewModel, vm => vm.Uot, v => v.togUotEnabled3.IsChecked).DisposeWith(disposables);
                     this.Bind(ViewModel, vm => vm.SelectedSource.MuxEnabled, v => v.togmuxEnabled3.IsChecked).DisposeWith(disposables);
                     break;
 
@@ -151,7 +185,7 @@ public partial class AddServerWindow
                 case EConfigType.TUIC:
                     this.Bind(ViewModel, vm => vm.SelectedSource.Username, v => v.txtId8.Text).DisposeWith(disposables);
                     this.Bind(ViewModel, vm => vm.SelectedSource.Password, v => v.txtSecurity8.Text).DisposeWith(disposables);
-                    this.Bind(ViewModel, vm => vm.SelectedSource.HeaderType, v => v.cmbHeaderType8.Text).DisposeWith(disposables);
+                    this.Bind(ViewModel, vm => vm.CongestionControl, v => v.cmbCongestionControl8.Text).DisposeWith(disposables);
                     break;
 
                 case EConfigType.WireGuard:
@@ -163,14 +197,41 @@ public partial class AddServerWindow
                     break;
 
                 case EConfigType.Anytls:
-                    this.Bind(ViewModel, vm => vm.SelectedSource.Password, v => v.txtId10.Text).DisposeWith(disposables);
+                    this.Bind(ViewModel, vm => vm.SelectedSource.Password, v => v.txtId11.Text).DisposeWith(disposables);
+                    break;
+
+                case EConfigType.Naive:
+                    this.Bind(ViewModel, vm => vm.SelectedSource.Username, v => v.txtId12.Text).DisposeWith(disposables);
+                    this.Bind(ViewModel, vm => vm.SelectedSource.Password, v => v.txtSecurity12.Text).DisposeWith(disposables);
+                    this.Bind(ViewModel, vm => vm.NaiveQuic, v => v.togNaiveQuic12.IsChecked).DisposeWith(disposables);
+                    this.Bind(ViewModel, vm => vm.CongestionControl, v => v.cmbCongestionControl12.Text).DisposeWith(disposables);
+                    this.Bind(ViewModel, vm => vm.InsecureConcurrency, v => v.txtInsecureConcurrency12.Text).DisposeWith(disposables);
+                    this.Bind(ViewModel, vm => vm.Uot, v => v.togUotEnabled12.IsChecked).DisposeWith(disposables);
                     break;
             }
             this.Bind(ViewModel, vm => vm.SelectedSource.Network, v => v.cmbNetwork.Text).DisposeWith(disposables);
-            this.Bind(ViewModel, vm => vm.SelectedSource.HeaderType, v => v.cmbHeaderType.Text).DisposeWith(disposables);
-            this.Bind(ViewModel, vm => vm.SelectedSource.RequestHost, v => v.txtRequestHost.Text).DisposeWith(disposables);
-            this.Bind(ViewModel, vm => vm.SelectedSource.Path, v => v.txtPath.Text).DisposeWith(disposables);
-            this.Bind(ViewModel, vm => vm.SelectedSource.Extra, v => v.txtExtra.Text).DisposeWith(disposables);
+            this.Bind(ViewModel, vm => vm.RawHeaderType, v => v.cmbHeaderTypeRaw.Text).DisposeWith(disposables);
+            this.Bind(ViewModel, vm => vm.Host, v => v.txtRequestHostRaw.Text).DisposeWith(disposables);
+            this.Bind(ViewModel, vm => vm.Path, v => v.txtPathRaw.Text).DisposeWith(disposables);
+
+            this.Bind(ViewModel, vm => vm.KcpHeaderType, v => v.cmbHeaderTypeKcp.Text).DisposeWith(disposables);
+            this.Bind(ViewModel, vm => vm.KcpSeed, v => v.txtKcpSeed.Text).DisposeWith(disposables);
+            this.Bind(ViewModel, vm => vm.KcpMtu, v => v.txtKcpMtu.Text).DisposeWith(disposables);
+
+            this.Bind(ViewModel, vm => vm.Host, v => v.txtRequestHostWs.Text).DisposeWith(disposables);
+            this.Bind(ViewModel, vm => vm.Path, v => v.txtPathWs.Text).DisposeWith(disposables);
+
+            this.Bind(ViewModel, vm => vm.Host, v => v.txtRequestHostHttpupgrade.Text).DisposeWith(disposables);
+            this.Bind(ViewModel, vm => vm.Path, v => v.txtPathHttpupgrade.Text).DisposeWith(disposables);
+
+            this.Bind(ViewModel, vm => vm.XhttpMode, v => v.cmbHeaderTypeXhttp.Text).DisposeWith(disposables);
+            this.Bind(ViewModel, vm => vm.Host, v => v.txtRequestHostXhttp.Text).DisposeWith(disposables);
+            this.Bind(ViewModel, vm => vm.Path, v => v.txtPathXhttp.Text).DisposeWith(disposables);
+            this.Bind(ViewModel, vm => vm.XhttpExtra, v => v.txtExtraXhttp.Text).DisposeWith(disposables);
+
+            this.Bind(ViewModel, vm => vm.GrpcMode, v => v.cmbHeaderTypeGrpc.Text).DisposeWith(disposables);
+            this.Bind(ViewModel, vm => vm.GrpcAuthority, v => v.txtRequestHostGrpc.Text).DisposeWith(disposables);
+            this.Bind(ViewModel, vm => vm.GrpcServiceName, v => v.txtPathGrpc.Text).DisposeWith(disposables);
 
             this.Bind(ViewModel, vm => vm.SelectedSource.StreamSecurity, v => v.cmbStreamSecurity.Text).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.SelectedSource.Sni, v => v.txtSNI.Text).DisposeWith(disposables);
@@ -180,6 +241,10 @@ public partial class AddServerWindow
             this.Bind(ViewModel, vm => vm.CertSha, v => v.txtCertSha256Pinning.Text).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.CertTip, v => v.labCertPinning.Text).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.Cert, v => v.txtCert.Text).DisposeWith(disposables);
+            this.Bind(ViewModel, vm => vm.AllowInsecureCertFetch, v => v.togAllowInsecureCertFetch.IsChecked).DisposeWith(disposables);
+            this.WhenAnyValue(x => x.ViewModel.AllowInsecureCertFetch)
+                .Select(b => b ? Visibility.Visible : Visibility.Collapsed)
+                .BindTo(this, v => v.txtAllowInsecureCertFetchTips.Visibility);
             this.Bind(ViewModel, vm => vm.Cert, v => v.txtCert.Text).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.SelectedSource.EchConfigList, v => v.txtEchConfigList.Text).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.SelectedSource.EchForceQuery, v => v.cmbEchForceQuery.Text).DisposeWith(disposables);
@@ -221,8 +286,12 @@ public partial class AddServerWindow
 
     private void CmbNetwork_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        SetHeaderType();
-        SetTips();
+        SetTransportGridVisibility();
+    }
+
+    private void CmbHeaderTypeRaw_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        SetRawHttpFieldsVisibility();
     }
 
     private void CmbStreamSecurity_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -231,17 +300,17 @@ public partial class AddServerWindow
         if (security == Global.StreamSecurityReality)
         {
             gridRealityMore.Visibility = Visibility.Visible;
-            gridTlsMore.Visibility = Visibility.Hidden;
+            gridTlsMore.Visibility = Visibility.Collapsed;
         }
         else if (security == Global.StreamSecurity)
         {
-            gridRealityMore.Visibility = Visibility.Hidden;
+            gridRealityMore.Visibility = Visibility.Collapsed;
             gridTlsMore.Visibility = Visibility.Visible;
         }
         else
         {
-            gridRealityMore.Visibility = Visibility.Hidden;
-            gridTlsMore.Visibility = Visibility.Hidden;
+            gridRealityMore.Visibility = Visibility.Collapsed;
+            gridTlsMore.Visibility = Visibility.Collapsed;
         }
     }
 
@@ -251,102 +320,62 @@ public partial class AddServerWindow
         txtId5.Text = Utils.GetGuid();
     }
 
-    private void SetHeaderType()
+    private void SetTransportGridVisibility()
     {
-        var lstHeaderType = new List<string>();
-
-        var network = cmbNetwork.SelectedItem.ToString();
-        if (network.IsNullOrEmpty())
-        {
-            lstHeaderType.Add(Global.None);
-            cmbHeaderType.ItemsSource = lstHeaderType;
-            cmbHeaderType.SelectedIndex = 0;
-            return;
-        }
-
-        if (network == nameof(ETransport.tcp))
-        {
-            lstHeaderType.Add(Global.None);
-            lstHeaderType.Add(Global.TcpHeaderHttp);
-        }
-        else if (network is nameof(ETransport.kcp) or nameof(ETransport.quic))
-        {
-            lstHeaderType.Add(Global.None);
-            lstHeaderType.AddRange(Global.KcpHeaderTypes);
-        }
-        else if (network is nameof(ETransport.xhttp))
-        {
-            lstHeaderType.AddRange(Global.XhttpMode);
-        }
-        else if (network == nameof(ETransport.grpc))
-        {
-            lstHeaderType.Add(Global.GrpcGunMode);
-            lstHeaderType.Add(Global.GrpcMultiMode);
-        }
-        else
-        {
-            lstHeaderType.Add(Global.None);
-        }
-        cmbHeaderType.ItemsSource = lstHeaderType;
-        cmbHeaderType.SelectedIndex = 0;
-    }
-
-    private void SetTips()
-    {
-        var network = cmbNetwork.SelectedItem.ToString();
+        var network = cmbNetwork.SelectedItem?.ToString();
         if (network.IsNullOrEmpty())
         {
             network = Global.DefaultNetwork;
         }
-        labHeaderType.Visibility = Visibility.Visible;
-        popExtra.Visibility = Visibility.Hidden;
-        tipRequestHost.Text =
-        tipPath.Text =
-        tipHeaderType.Text = string.Empty;
+
+        gridTransportRaw.Visibility = Visibility.Collapsed;
+        gridTransportKcp.Visibility = Visibility.Collapsed;
+        gridTransportWs.Visibility = Visibility.Collapsed;
+        gridTransportHttpupgrade.Visibility = Visibility.Collapsed;
+        gridTransportXhttp.Visibility = Visibility.Collapsed;
+        gridTransportGrpc.Visibility = Visibility.Collapsed;
 
         switch (network)
         {
-            case nameof(ETransport.tcp):
-                tipRequestHost.Text = ResUI.TransportRequestHostTip1;
-                tipHeaderType.Text = ResUI.TransportHeaderTypeTip1;
+            case nameof(ETransport.raw):
+                gridTransportRaw.Visibility = Visibility.Visible;
                 break;
-
             case nameof(ETransport.kcp):
-                tipHeaderType.Text = ResUI.TransportHeaderTypeTip2;
-                tipPath.Text = ResUI.TransportPathTip5;
+                gridTransportKcp.Visibility = Visibility.Visible;
                 break;
-
             case nameof(ETransport.ws):
+                gridTransportWs.Visibility = Visibility.Visible;
+                break;
             case nameof(ETransport.httpupgrade):
-                tipRequestHost.Text = ResUI.TransportRequestHostTip2;
-                tipPath.Text = ResUI.TransportPathTip1;
+                gridTransportHttpupgrade.Visibility = Visibility.Visible;
                 break;
-
             case nameof(ETransport.xhttp):
-                tipRequestHost.Text = ResUI.TransportRequestHostTip2;
-                tipPath.Text = ResUI.TransportPathTip1;
-                tipHeaderType.Text = ResUI.TransportHeaderTypeTip5;
-                labHeaderType.Visibility = Visibility.Hidden;
-                popExtra.Visibility = Visibility.Visible;
+                gridTransportXhttp.Visibility = Visibility.Visible;
                 break;
-
-            case nameof(ETransport.h2):
-                tipRequestHost.Text = ResUI.TransportRequestHostTip3;
-                tipPath.Text = ResUI.TransportPathTip2;
-                break;
-
-            case nameof(ETransport.quic):
-                tipRequestHost.Text = ResUI.TransportRequestHostTip4;
-                tipPath.Text = ResUI.TransportPathTip3;
-                tipHeaderType.Text = ResUI.TransportHeaderTypeTip3;
-                break;
-
             case nameof(ETransport.grpc):
-                tipRequestHost.Text = ResUI.TransportRequestHostTip5;
-                tipPath.Text = ResUI.TransportPathTip4;
-                tipHeaderType.Text = ResUI.TransportHeaderTypeTip4;
-                labHeaderType.Visibility = Visibility.Hidden;
+                gridTransportGrpc.Visibility = Visibility.Visible;
+                break;
+            default:
+                gridTransportRaw.Visibility = Visibility.Visible;
                 break;
         }
+
+        SetRawHttpFieldsVisibility();
+    }
+
+    private void SetRawHttpFieldsVisibility()
+    {
+        var network = cmbNetwork.SelectedItem?.ToString();
+        if (network.IsNullOrEmpty())
+        {
+            network = Global.DefaultNetwork;
+        }
+
+        var rawHeaderType = cmbHeaderTypeRaw.SelectedItem?.ToString();
+        var showRawHttpFields = network == nameof(ETransport.raw)
+                                && rawHeaderType == Global.RawHeaderHttp;
+        gridTransportRawHttp.Visibility = showRawHttpFields
+            ? Visibility.Visible
+            : Visibility.Collapsed;
     }
 }
