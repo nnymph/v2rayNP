@@ -695,14 +695,6 @@ public class Global
         ""
     ];
 
-    public static readonly List<string> EchForceQuerys =
-    [
-        "none",
-        "half",
-        "full",
-        ""
-    ];
-
     public static readonly List<string> TunIcmpRoutingPolicies =
     [
         "rule",
