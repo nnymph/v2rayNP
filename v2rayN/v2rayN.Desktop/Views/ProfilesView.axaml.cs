@@ -88,6 +88,7 @@ public partial class ProfilesView : ReactiveUserControl<ProfilesViewModel>
             this.BindCommand(ViewModel, vm => vm.Export2ClientConfigClipboardCmd, v => v.menuExport2ClientConfigClipboard).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.Export2ShareUrlCmd, v => v.menuExport2ShareUrl).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.Export2ShareUrlBase64Cmd, v => v.menuExport2ShareUrlBase64).DisposeWith(disposables);
+            this.BindCommand(ViewModel, vm => vm.Export2InnerUriCmd, v => v.menuExport2InnerUri).DisposeWith(disposables);
 
             AppEvents.AppExitRequested
               .AsObservable()
@@ -95,11 +96,11 @@ public partial class ProfilesView : ReactiveUserControl<ProfilesViewModel>
               .Subscribe(_ => StorageUI())
               .DisposeWith(disposables);
 
-            AppEvents.AdjustMainLvColWidthRequested
-                .AsObservable()
-                .ObserveOn(RxSchedulers.MainThreadScheduler)
-                .Subscribe(_ => AutofitColumnWidth())
-                .DisposeWith(disposables);
+            //AppEvents.AdjustMainLvColWidthRequested
+            //    .AsObservable()
+            //    .ObserveOn(RxSchedulers.MainThreadScheduler)
+            //    .Subscribe(_ => AutofitColumnWidth())
+            //    .DisposeWith(disposables);
         });
 
         RestoreUI();
