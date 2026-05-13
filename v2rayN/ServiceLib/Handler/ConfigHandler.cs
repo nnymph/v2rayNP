@@ -1816,9 +1816,9 @@ public static class ConfigHandler
         ProfileItem? activeProfile = null;
         if (isSub && subid.IsNotEmpty())
         {
-            await RemoveServersViaSubid(config, subid, true);
             lstOriSub = await AppManager.Instance.ProfileItems(subid);
             activeProfile = lstOriSub?.FirstOrDefault(t => t.IndexId == config.IndexId);
+            await RemoveServersViaSubid(config, subid, true);
         }
 
         var counter = 0;
@@ -1847,7 +1847,19 @@ public static class ConfigHandler
         }
 
         //May be standard uri mixed with internal uri
-        var innerUriCount = await AddBatchServers4InnerUri(config, strData, subid, isSub);
+        var innerUriCount = 0;
+        if (Utils.IsBase64String(strData))
+        {
+            innerUriCount = await AddBatchServers4InnerUri(config, Utils.Base64Decode(strData), subid, isSub);
+        }
+        if (innerUriCount < 1)
+        {
+            innerUriCount = await AddBatchServers4InnerUri(config, strData, subid, isSub);
+        }
+        if (innerUriCount < 1)
+        {
+            innerUriCount = await AddBatchServers4InnerUri(config, Utils.Base64Decode(strData), subid, isSub);
+        }
         if (innerUriCount > 0)
         {
             if (counter > 0)
