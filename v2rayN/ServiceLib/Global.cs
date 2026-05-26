@@ -209,6 +209,10 @@ public class Global
 
     public const string NaiveQuicProtocolShare = "naive+quic://";
 
+    public const string SOCKS5Protocol = "socks5://";
+
+    public const string SOCKS4Protocol = "socks4://";
+
     public static readonly Dictionary<EConfigType, string> ProtocolShares = new()
     {
         { EConfigType.VMess, "vmess://" },
@@ -509,6 +513,7 @@ public class Global
 
     public static readonly List<string> InboundTags =
     [
+        "tun",
         "socks",
         "socks2",
         "socks3"

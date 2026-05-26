@@ -565,6 +565,15 @@ namespace ServiceLib.Resx {
         }
         
         /// <summary>
+        ///   查找类似 IP Info 的本地化字符串。
+        /// </summary>
+        public static string LvTestIpInfo {
+            get {
+                return ResourceManager.GetString("LvTestIpInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Speed (MB/s) 的本地化字符串。
         /// </summary>
         public static string LvTestSpeed {
@@ -867,6 +876,15 @@ namespace ServiceLib.Resx {
         public static string menuBackupAndRestore {
             get {
                 return ResourceManager.GetString("menuBackupAndRestore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Only Check 的本地化字符串。
+        /// </summary>
+        public static string menuCheckOnly {
+            get {
+                return ResourceManager.GetString("menuCheckOnly", resourceCulture);
             }
         }
         
@@ -1299,6 +1317,15 @@ namespace ServiceLib.Resx {
         public static string menuMsgViewSelectAll {
             get {
                 return ResourceManager.GetString("menuMsgViewSelectAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 New Update 的本地化字符串。
+        /// </summary>
+        public static string menuNewUpdate {
+            get {
+                return ResourceManager.GetString("menuNewUpdate", resourceCulture);
             }
         }
         
@@ -1888,6 +1915,15 @@ namespace ServiceLib.Resx {
         }
         
         /// <summary>
+        ///   查找类似 {0} has a new version available: {1} 的本地化字符串。
+        /// </summary>
+        public static string MsgCheckUpdateHasNewVersion {
+            get {
+                return ResourceManager.GetString("MsgCheckUpdateHasNewVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Core &apos;{0}&apos; does not support network type &apos;{1}&apos; 的本地化字符串。
         /// </summary>
         public static string MsgCoreNotSupportNetwork {
@@ -2037,6 +2073,15 @@ namespace ServiceLib.Resx {
         public static string MsgNeedUrl {
             get {
                 return ResourceManager.GetString("MsgNeedUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Not Support 的本地化字符串。
+        /// </summary>
+        public static string MsgNotSupport {
+            get {
+                return ResourceManager.GetString("MsgNotSupport", resourceCulture);
             }
         }
         
@@ -3484,7 +3529,7 @@ namespace ServiceLib.Resx {
         }
         
         /// <summary>
-        ///   查找类似 socks: local port, socks2: second local port, socks3: LAN port 的本地化字符串。
+        ///   查找类似 tun: TUN inbound, socks: local port, socks2: second local port, socks3: LAN port 的本地化字符串。
         /// </summary>
         public static string TbRoutingInboundTagTips {
             get {
@@ -3925,7 +3970,7 @@ namespace ServiceLib.Resx {
         }
         
         /// <summary>
-        ///   查找类似 Check for pre-release updates 的本地化字符串。
+        ///   查找类似 Check for pre-release 的本地化字符串。
         /// </summary>
         public static string TbSettingsEnableCheckPreReleaseUpdate {
             get {

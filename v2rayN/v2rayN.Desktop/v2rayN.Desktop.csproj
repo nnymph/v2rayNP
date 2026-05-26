@@ -30,6 +30,7 @@
 		<PackageReference Include="ReactiveUI.Fody">
 			<TreatAsUsed>true</TreatAsUsed>
 		</PackageReference>
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" />
 	</ItemGroup>
 
 	<ItemGroup>
