@@ -31,7 +31,7 @@ public class InItem
     public string Protocol { get; set; }
     public bool UdpEnabled { get; set; }
     public bool SniffingEnabled { get; set; } = true;
-    public List<string>? DestOverride { get; set; } = ["http", "tls"];
+    public List<string>? DestOverride { get; set; } = ["http", "tls", "fakedns"];
     public bool RouteOnly { get; set; }
     public bool AllowLANConn { get; set; }
     public bool NewPort4LAN { get; set; }

@@ -2616,7 +2616,7 @@ public static class ConfigHandler
         {
             UseSystemHosts = false,
             AddCommonHosts = true,
-            FakeIP = false,
+            FakeIP = true,
             GlobalFakeIp = true,
             BlockBindingQuery = true,
             DirectDNS = Global.DomainDirectDNSAddress.FirstOrDefault(),
