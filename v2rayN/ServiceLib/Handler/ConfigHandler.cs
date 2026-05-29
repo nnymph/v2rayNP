@@ -2457,14 +2457,14 @@ public static class ConfigHandler
         };
         await AddBatchRoutingRules(item7, EmbedUtils.GetEmbedText(Global.CustomRoutingFileName + "white"));
 
-        //Global
-        var item1 = new RoutingItem()
-        {
-            Remarks = $"{ver}Весь трафик",
-            Url = string.Empty,
-            Sort = maxSort + 7,
-        };
-        await AddBatchRoutingRules(item1, EmbedUtils.GetEmbedText(Global.CustomRoutingFileName + "global"));
+        // //Global
+        // var item1 = new RoutingItem()
+        // {
+        //     Remarks = $"{ver}Весь трафик",
+        //     Url = string.Empty,
+        //     Sort = maxSort + 7,
+        // };
+        // await AddBatchRoutingRules(item1, EmbedUtils.GetEmbedText(Global.CustomRoutingFileName + "global"));
 
         if (!blImportAdvancedRules)
         {
