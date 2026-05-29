@@ -438,9 +438,9 @@ public class Global
 
     public static readonly List<string> DomainDirectDNSAddress =
     [
-        "8.8.8.8",
-        "1.1.1.1",
         "77.88.8.8",
+        "1.1.1.1",
+        "8.8.8.8",
         "https://common.dot.dns.yandex.net",
         "https://cloudflare-dns.com/dns-query",
         "https://dns.google/dns-query",
@@ -449,8 +449,8 @@ public class Global
 
     public static readonly List<string> DomainRemoteDNSAddress =
     [
-        "https://dns.cloudflare.com/dns-query",
-            "https://cloudflare-dns.com/dns-query",
+        "https://cloudflare-dns.com/dns-query,https://dns.google/dns-query",
+            "https://dns.cloudflare.com/dns-query",
             "https://dns.google/dns-query",
             "https://doh.dns.sb/dns-query",
             "https://doh.opendns.com/dns-query",
@@ -464,9 +464,9 @@ public class Global
 
     public static readonly List<string> DomainPureIPDNSAddress =
     [
-        "1.1.1.1",
+        "77.88.8.8",
             "8.8.8.8",
-            "77.88.8.8",
+            "1.1.1.1",
             "223.5.5.5",
             "119.29.29.29",
             "localhost"
