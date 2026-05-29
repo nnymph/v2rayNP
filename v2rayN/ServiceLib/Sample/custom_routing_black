@@ -31,7 +31,8 @@
     "outboundTag": "direct",
     "ip": [
       "geoip:private",
-      "geoip:nnymph-direct"
+      "geoip:nnymph-direct",
+      "geoip:ru"
     ]
   },
   {
