@@ -2448,23 +2448,23 @@ public static class ConfigHandler
         };
         await AddBatchRoutingRules(item6, EmbedUtils.GetEmbedText(Global.CustomRoutingFileName + "black"));
 
-        //Весь трафик кроме РФ
-        var item7 = new RoutingItem()
+        // //Весь трафик кроме РФ
+        // var item7 = new RoutingItem()
+        // {
+        //     Remarks = $"{ver}Весь трафик кроме РФ",
+        //     Url = string.Empty,
+        //     Sort = maxSort + 6,
+        // };
+        // await AddBatchRoutingRules(item7, EmbedUtils.GetEmbedText(Global.CustomRoutingFileName + "white"));
+
+        //Global
+        var item1 = new RoutingItem()
         {
             Remarks = $"{ver}Весь трафик кроме РФ",
             Url = string.Empty,
             Sort = maxSort + 6,
         };
-        await AddBatchRoutingRules(item7, EmbedUtils.GetEmbedText(Global.CustomRoutingFileName + "white"));
-
-        // //Global
-        // var item1 = new RoutingItem()
-        // {
-        //     Remarks = $"{ver}Весь трафик",
-        //     Url = string.Empty,
-        //     Sort = maxSort + 7,
-        // };
-        // await AddBatchRoutingRules(item1, EmbedUtils.GetEmbedText(Global.CustomRoutingFileName + "global"));
+        await AddBatchRoutingRules(item1, EmbedUtils.GetEmbedText(Global.CustomRoutingFileName + "global"));
 
         if (!blImportAdvancedRules)
         {

@@ -30,7 +30,6 @@
 		<EmbeddedResource Include="Sample\custom_routing_global" />
 		<EmbeddedResource Include="Sample\custom_routing_safe" />
 		<EmbeddedResource Include="Sample\custom_routing_safe_zapret" />
-		<EmbeddedResource Include="Sample\custom_routing_white" />
 		<EmbeddedResource Include="Sample\dns_singbox_normal" />
 		<EmbeddedResource Include="Sample\dns_v2ray_normal" />
 		<EmbeddedResource Include="Sample\kill_as_sudo_linux_sh" />

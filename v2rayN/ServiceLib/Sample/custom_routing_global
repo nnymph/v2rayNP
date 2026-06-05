@@ -1,34 +1,52 @@
 [
-	{
-		"remarks": "Блокируем QUIC",
-		"outboundTag": "block",
-		"port": "443",
-		"network": "udp"
-	},
-    {
+  {
     "remarks": "Торренты напрямую",
     "outboundTag": "direct",
     "protocol": [
       "bittorrent"
     ]
-    },
-	{
-		"remarks": "IP напрямую",
-		"outboundTag": "direct",
-		"ip": [
-			"geoip:private"
-		]
-	},
-	{
-		"remarks": "Домены напрямую",
-		"outboundTag": "direct",
-		"domain": [
-			"geosite:private"
-		]
-	},
-	{
-		"remarks": "Весь остальной трафик через прокси",
-		"port": "0-65535",
-		"outboundTag": "proxy"
-	}
+  },
+  {
+    "remarks": "Блокируем QUIC",
+    "outboundTag": "block",
+    "port": "443",
+    "network": "udp"
+  },
+  {
+    "remarks": "Блокируем IP",
+    "outboundTag": "block",
+    "ip": [
+      "geoip:nnymph-block-white"
+    ]
+  },
+  {
+    "remarks": "Блокируем домены",
+    "outboundTag": "block",
+    "domain": [
+      "geosite:nnymph-block-white"
+    ]
+  },
+  {
+    "remarks": "IP напрямую",
+    "outboundTag": "direct",
+    "ip": [
+      "geoip:private",
+      "geoip:nnymph-direct-white",
+      "geoip:ru"
+    ]
+  },
+  {
+    "remarks": "Домены напрямую",
+    "outboundTag": "direct",
+    "domain": [
+      "geosite:private",
+      "geosite:nnymph-direct-white",
+      "geosite:ru-available-only-inside"
+    ]
+  },
+  {
+    "remarks": "Весь остальной трафик через прокси",
+    "port": "0-65535",
+    "outboundTag": "proxy"
+  }
 ]
