@@ -52,7 +52,7 @@ jobs:
                            libc6 libgcc-s1 libstdc++6 zlib1g libicu-dev libssl-dev
 
     - name: Checkout repo (for scripts)
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         submodules: 'recursive'
         fetch-depth: '0'
@@ -154,7 +154,7 @@ jobs:
         dnf repolist | grep -i epel || true
 
     - name: Checkout repo (for scripts)
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         submodules: 'recursive'
         fetch-depth: '0'
@@ -362,7 +362,7 @@ jobs:
   #         sudo apt-get install -y rsync qemu-utils expect wget curl ca-certificates libfdt1 libglib2.0-0 libpixman-1-0 libslirp0
   # 
   #     - name: Checkout repo
-  #       uses: actions/checkout@v6
+  #       uses: actions/checkout@v7
   #       with:
   #         submodules: recursive
   #         fetch-depth: 0
