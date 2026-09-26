@@ -113,6 +113,7 @@ public sealed class CoreInfoManager
                     DownloadUrlLinux64 = urlN + "/download/{0}/v2rayN-linux-64.zip",
                     DownloadUrlLinuxArm64 = urlN + "/download/{0}/v2rayN-linux-arm64.zip",
                     DownloadUrlLinuxRiscV64 = urlN + "/download/{0}/v2rayN-linux-riscv64.zip",
+                    DownloadUrlLinuxLoong64 = urlN + "/download/{0}/v2rayN-linux-loong64.zip",
                     DownloadUrlOSX64 = urlN + "/download/{0}/v2rayN-macos-64.zip",
                     DownloadUrlOSXArm64 = urlN + "/download/{0}/v2rayN-macos-arm64.zip",
                 },
@@ -157,6 +158,7 @@ public sealed class CoreInfoManager
                     DownloadUrlLinux64 = urlXray + "/download/{0}/Xray-linux-64.zip",
                     DownloadUrlLinuxArm64 = urlXray + "/download/{0}/Xray-linux-arm64-v8a.zip",
                     DownloadUrlLinuxRiscV64 = urlXray + "/download/{0}/Xray-linux-riscv64.zip",
+                    DownloadUrlLinuxLoong64 = urlXray + "/download/{0}/Xray-linux-loong64.zip",
                     DownloadUrlOSX64 = urlXray + "/download/{0}/Xray-macos-64.zip",
                     DownloadUrlOSXArm64 = urlXray + "/download/{0}/Xray-macos-arm64-v8a.zip",
                     Match = "Xray",
@@ -180,6 +182,7 @@ public sealed class CoreInfoManager
                     DownloadUrlLinux64 = urlMihomo + "/download/{0}/mihomo-linux-amd64-v1-{0}.gz",
                     DownloadUrlLinuxArm64 = urlMihomo + "/download/{0}/mihomo-linux-arm64-{0}.gz",
                     DownloadUrlLinuxRiscV64 = urlMihomo + "/download/{0}/mihomo-linux-riscv64-{0}.gz",
+                    DownloadUrlLinuxLoong64 = urlMihomo + "/download/{0}/mihomo-linux-loong64-abi2-{0}.gz",
                     DownloadUrlOSX64 = urlMihomo + "/download/{0}/mihomo-darwin-amd64-v1-{0}.gz",
                     DownloadUrlOSXArm64 = urlMihomo + "/download/{0}/mihomo-darwin-arm64-{0}.gz",
                     Match = "Mihomo",
@@ -223,8 +226,10 @@ public sealed class CoreInfoManager
                     DownloadUrlLinux64 = urlSingbox + "/download/{0}/sing-box-{1}-linux-amd64.tar.gz",
                     DownloadUrlLinuxArm64 = urlSingbox + "/download/{0}/sing-box-{1}-linux-arm64.tar.gz",
                     DownloadUrlLinuxRiscV64 = urlSingbox + "/download/{0}/sing-box-{1}-linux-riscv64.tar.gz",
+                    DownloadUrlLinuxLoong64 = urlSingbox + "/download/{0}/sing-box-{1}-linux-loong64.tar.gz",
                     DownloadUrlOSX64 = urlSingbox + "/download/{0}/sing-box-{1}-darwin-amd64.tar.gz",
                     DownloadUrlOSXArm64 = urlSingbox + "/download/{0}/sing-box-{1}-darwin-arm64.tar.gz",
+                    LockedMaxVersion = new SemanticVersion(1, 14, int.MaxValue),
                     Match = "sing-box",
                     VersionArg = "version",
                 },
@@ -314,6 +319,7 @@ public sealed class CoreInfoManager
             names.Add("mihomo-linux-amd64");
             names.Add("mihomo-linux-arm64");
             names.Add("mihomo-linux-riscv64");
+            names.Add("mihomo-linux-loong64-abi2");
         }
         else if (Utils.IsMacOS())
         {

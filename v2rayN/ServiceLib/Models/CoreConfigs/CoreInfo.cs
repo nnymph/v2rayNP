@@ -13,8 +13,10 @@ public class CoreInfo
     public string? DownloadUrlLinux64 { get; set; }
     public string? DownloadUrlLinuxArm64 { get; set; }
     public string? DownloadUrlLinuxRiscV64 { get; set; }
+    public string? DownloadUrlLinuxLoong64 { get; set; }
     public string? DownloadUrlOSX64 { get; set; }
     public string? DownloadUrlOSXArm64 { get; set; }
+    public SemanticVersion? LockedMaxVersion { get; set; }
     public string? Match { get; set; }
     public string? VersionArg { get; set; }
     public bool AbsolutePath { get; set; }

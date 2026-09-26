@@ -12,6 +12,7 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 jobs:
   package:
@@ -37,7 +38,7 @@ jobs:
         }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Restore build artifacts
       uses: actions/download-artifact@v8
@@ -95,7 +96,7 @@ jobs:
 
     - name: Sleep for race condition between matrix jobs
       run: sleep "$(od -An -N2 -tu2 /dev/urandom | awk 'NR==1{printf "%.2f", $1/5461}')"
-      
+
     - name: Upload zip archive to release
       uses: svenstaro/upload-release-action@v2
       with:

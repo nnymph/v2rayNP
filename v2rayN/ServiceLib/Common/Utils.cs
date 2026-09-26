@@ -1,4 +1,3 @@
-using System.Collections.Specialized;
 using System.Security.Principal;
 using CliWrap;
 using CliWrap.Buffered;
@@ -51,7 +50,7 @@ public class Utils
 
         try
         {
-            str = str.Replace(Environment.NewLine, string.Empty);
+            str = str.ReplaceLineBreaks(string.Empty);
             return new List<string>(str.Split(',', StringSplitOptions.RemoveEmptyEntries));
         }
         catch (Exception ex)
@@ -114,9 +113,7 @@ public class Utils
             }
 
             plainText = plainText.Trim()
-                .Replace(Environment.NewLine, "")
-                .Replace("\n", "")
-                .Replace("\r", "")
+                .ReplaceLineBreaks("")
                 .Replace('_', '/')
                 .Replace('-', '+')
                 .Replace(" ", "");
@@ -203,7 +200,9 @@ public class Utils
         var parts = query[1..].Split('&', StringSplitOptions.RemoveEmptyEntries);
         foreach (var part in parts)
         {
-            var keyValue = part.Split('=');
+            // Split on the FIRST '=' only: RFC 3986 lists '=' among the sub-delimiters a query
+            // value may carry, so everything after the first one belongs to the value.
+            var keyValue = part.Split('=', 2);
             if (keyValue.Length != 2)
             {
                 continue;
@@ -321,7 +320,32 @@ public class Utils
             return text;
         }
 
-        return text.Replace("，", ",").Replace(Environment.NewLine, ",");
+        return text.Replace("，", ",")
+                    .Replace(" ", "")
+                    .ReplaceLineBreaks(",");
+    }
+
+    public static string ParseProcess(string text)
+    {
+        if (text.IsNullOrEmpty())
+        {
+            return string.Empty;
+        }
+        if (text.StartsWith('"'))
+        {
+            text = text[1..];
+        }
+        if (text.EndsWith('"'))
+        {
+            text = text[..^1];
+        }
+        return List2String(text.Replace("，", ",")
+            .Replace("\\", "/")
+            .ReplaceLineBreaks(",")
+            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(x => x.TrimEx())
+            .Where(x => x.IsNotEmpty())
+            .ToList());
     }
 
     public static List<string> GetEnumNames<TEnum>() where TEnum : Enum
@@ -462,12 +486,17 @@ public class Utils
 
     public static string? DomainStrategy4Sbox(string? strategy)
     {
+        if (strategy is null)
+        {
+            return null;
+        }
+
         return strategy switch
         {
-            not null when strategy.StartsWith("UseIPv4") => "prefer_ipv4",
-            not null when strategy.StartsWith("UseIPv6") => "prefer_ipv6",
-            not null when strategy.StartsWith("ForceIPv4") => "ipv4_only",
-            not null when strategy.StartsWith("ForceIPv6") => "ipv6_only",
+            _ when strategy.StartsWith("UseIPv6") => "prefer_ipv6",
+            _ when strategy.StartsWith("UseIP") => "prefer_ipv4",
+            _ when strategy.StartsWith("ForceIPv6") => "ipv6_only",
+            _ when strategy.StartsWith("ForceIP") => "ipv4_only",
             _ => null
         };
     }
@@ -576,6 +605,58 @@ public class Utils
         }
     }
 
+    public static bool TryParseRange(string? input, int min, int max, out int from, out int to)
+    {
+        from = to = 0;
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            return true;
+        }
+        var parts = input.Split('-');
+        if (parts.Length == 1)
+        {
+            if (!int.TryParse(parts[0], out from))
+            {
+                return false;
+            }
+            to = from;
+            return from >= min && to <= max;
+        }
+        if (parts.Length != 2
+            || !int.TryParse(parts[0], out from)
+            || !int.TryParse(parts[1], out to))
+        {
+            return false;
+        }
+        return from >= min && to <= max && from <= to;
+    }
+
+    public static bool TryParseMaxSplit(string? input, int min, int max, out int from, out int to)
+    {
+        from = to = 0;
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            return true;
+        }
+        var parts = input.Split('-');
+        if (parts.Length == 1)
+        {
+            if (!int.TryParse(parts[0], out from))
+            {
+                return false;
+            }
+            to = from;
+            return from >= min && to <= max;
+        }
+        if (parts.Length != 2
+            || !int.TryParse(parts[0], out from)
+            || !int.TryParse(parts[1], out to))
+        {
+            return false;
+        }
+        return from >= min && to <= max && from <= to;
+    }
+
     public static bool IsPrivateNetwork(string ip)
     {
         if (IPAddress.TryParse(ip, out var address))
@@ -645,6 +726,40 @@ public class Utils
         return false;
     }
 
+    /// <summary>
+    /// Regex match with a timeout guard. Filter patterns can come from user
+    /// input or subscription content while the tested text (remarks, log
+    /// messages) is attacker-influenced, so an evil pattern like (a+)+$
+    /// would otherwise hang the caller (ReDoS). On timeout or invalid
+    /// pattern, fail open (return true) so no node/message is silently
+    /// dropped; the incident is logged.
+    /// </summary>
+    public static bool IsRegexMatch(string? input, string? pattern, int timeoutSeconds = 2)
+    {
+        if (pattern.IsNullOrEmpty())
+        {
+            return true;
+        }
+        if (input.IsNullOrEmpty())
+        {
+            return false;
+        }
+        try
+        {
+            return Regex.IsMatch(input, pattern, RegexOptions.None, TimeSpan.FromSeconds(timeoutSeconds));
+        }
+        catch (RegexMatchTimeoutException ex)
+        {
+            Logging.SaveLog("IsRegexMatch timeout", ex);
+            return true;
+        }
+        catch (ArgumentException ex)
+        {
+            Logging.SaveLog("IsRegexMatch invalid pattern", ex);
+            return true;
+        }
+    }
+
     #endregion Data Checks
 
     #region Speed Test
@@ -673,11 +788,11 @@ public class Utils
         return false;
     }
 
-    public static int GetFreePort(int defaultPort = 0)
+    public static int GetFreePort(int defaultPort)
     {
         try
         {
-            if (!(defaultPort == 0 || Utils.PortInUse(defaultPort)))
+            if (!PortInUse(defaultPort))
             {
                 return defaultPort;
             }
@@ -714,6 +829,58 @@ public class Utils
         }
 
         return (endpoints, connections);
+    }
+
+    public static bool IsLocalIP(string ipAddress)
+    {
+        if (!IPAddress.TryParse(ipAddress, out var targetAddress))
+        {
+            return false;
+        }
+
+        return NetworkInterface.GetAllNetworkInterfaces()
+               .SelectMany(ni => ni.GetIPProperties().UnicastAddresses)
+               .Any(ua => ua.Address.Equals(targetAddress));
+    }
+
+    public static bool ContainsInterfaceName(string inInterfaceName)
+    {
+        return NetworkInterface.GetAllNetworkInterfaces()
+            .Any(ni => ni.Name.Equals(inInterfaceName, StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// <summary>
+    /// Whether the host holds a globally routable IPv6 address, that is one inside 2000::/3.
+    /// Link-local and unique local addresses are excluded: they never reach the IPv6 internet,
+    /// so a host holding only those has no IPv6 traffic that could bypass the tunnel, and no
+    /// IPv6 path that traffic sent into the tunnel could come back out of.
+    /// </summary>
+    public static bool HasGlobalIPv6Address()
+    {
+        try
+        {
+            return NetworkInterface.GetAllNetworkInterfaces()
+                .Where(ni => ni.OperationalStatus == OperationalStatus.Up
+                             && ni.NetworkInterfaceType != NetworkInterfaceType.Loopback)
+                .SelectMany(ni => ni.GetIPProperties().UnicastAddresses)
+                .Any(ua => IsGlobalUnicastIPv6(ua.Address));
+        }
+        catch
+        {
+            return true;
+        }
+    }
+
+    private static bool IsGlobalUnicastIPv6(IPAddress address)
+    {
+        if (address.AddressFamily != AddressFamily.InterNetworkV6)
+        {
+            return false;
+        }
+
+        // 2000::/3 is the only range currently assigned for global unicast, which leaves out
+        // ::1, fe80::/10, fc00::/7 and ff00::/8 in a single test.
+        return (address.GetAddressBytes()[0] & 0xE0) == 0x20;
     }
 
     #endregion Speed Test
@@ -885,12 +1052,12 @@ public class Utils
         return new Dictionary<string, string>();
     }
 
-    public static async Task<string?> GetCliWrapOutput(string filePath, string? arg)
+    public static async Task<string?> GetCliWrapOutput(string filePath, string? arg, CancellationToken cancellationToken = default)
     {
-        return await GetCliWrapOutput(filePath, arg != null ? new List<string>() { arg } : null);
+        return await GetCliWrapOutput(filePath, arg != null ? new List<string>() { arg } : null, cancellationToken);
     }
 
-    public static async Task<string?> GetCliWrapOutput(string filePath, IEnumerable<string>? args)
+    public static async Task<string?> GetCliWrapOutput(string filePath, IEnumerable<string>? args, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -907,7 +1074,7 @@ public class Utils
                 }
             }
 
-            var result = await cmd.ExecuteBufferedAsync();
+            var result = await cmd.ExecuteBufferedAsync(cancellationToken);
             if (result.IsSuccess)
             {
                 return result.StandardOutput ?? "";
