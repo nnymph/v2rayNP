@@ -263,7 +263,8 @@ public class Global
         { EConfigType.TUIC, "tuic" },
         { EConfigType.WireGuard, "wireguard" },
         { EConfigType.Anytls, "anytls" },
-        { EConfigType.Naive, "naive" }
+        { EConfigType.Naive, "naive" },
+        { EConfigType.MASQUE, "masque" },
     };
 
     public static readonly List<string> VmessSecurities =
@@ -373,6 +374,7 @@ public class Global
         EConfigType.Trojan,
         EConfigType.Hysteria2,
         EConfigType.WireGuard,
+        EConfigType.MASQUE,
         EConfigType.SOCKS,
         EConfigType.HTTP,
     ];
@@ -388,6 +390,7 @@ public class Global
         EConfigType.Anytls,
         EConfigType.Naive,
         EConfigType.WireGuard,
+        EConfigType.MASQUE,
         EConfigType.SOCKS,
         EConfigType.HTTP,
     ];
@@ -657,10 +660,10 @@ public class Global
         { ECoreType.Xray, "XTLS/Xray-core" },
         { ECoreType.sing_box, "SagerNet/sing-box" },
         { ECoreType.mihomo, "MetaCubeX/mihomo" },
-        { ECoreType.hysteria, "apernet/hysteria" },
-        { ECoreType.hysteria2, "apernet/hysteria" },
+        { ECoreType.hysteria, "HyNetworks/hysteria" },
+        { ECoreType.hysteria2, "HyNetworks/hysteria" },
         { ECoreType.naiveproxy, "klzgrad/naiveproxy" },
-        { ECoreType.tuic, "EAimTY/tuic" },
+        { ECoreType.tuic, "tuic-protocol/tuic" },
         { ECoreType.juicity, "juicity/juicity" },
         { ECoreType.brook, "txthinking/brook" },
         { ECoreType.overtls, "ShadowsocksR-Live/overtls" },
